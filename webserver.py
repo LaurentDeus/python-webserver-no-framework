@@ -42,15 +42,17 @@ class HttpRequestHandler(BaseHTTPRequestHandler):
             # print(self.path)
             self.send_headers_for_success_GET()
 
-            output = ''
+            output = '<h1>I Have Below Restaurants in My Database</h1>'
             for r in restaurants_names:
-                output += f"<li>{r}</li>"
+                output += f"""<h2>{r}</h2><a href=''>Edit</a><br>
+<a href=''>Delete</a><br><br>"""
 
             self.wfile.write(output.encode())
         else:
-            self.send_headers_for_success_GET()
-            self.wfile.write(
-                "<h1 style='color:red'>I have no this Route, please wait :)</h1>".encode())
+            self.send_error(404, f'{self.path} not Found,Please check')
+            # self.send_headers_for_success_GET()
+            # self.wfile.write(
+    #     "<h1 style='color:red'>I have no this Route, please wait :)</h1>".encode())
 
 
 def main(server_class=HTTPServer, handler_class=HttpRequestHandler):
