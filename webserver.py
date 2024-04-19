@@ -14,6 +14,10 @@ class HttpRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_POST(self):
+
+        if self.path.endswith('/restaurant/new'):
+            pass
+
         # print(self.headers)
         form = cgi.FieldStorage(self.rfile, self.headers, environ={'REQUEST_METHOD': 'POST',
                                                                    'CONTENT_TYPE': self.headers['Content-Type'],
@@ -37,14 +41,23 @@ class HttpRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
 
-        if self.path.endswith('/restaurants'):
+        if self.path.endswith('/restaurant/new'):
+            self.send_headers_for_success_GET()
+            out = """<h1>CREATING NEW RESTAURANT</h1>
+<form action="/restaurant/new" method="post">
+    <input type="text" name="restaurant_name" placeholder='Restaurant Name'><br><br>
+    <input type="submit">
+</form>"""
+            self.wfile.write(out.encode())
+
+        elif self.path.endswith('/restaurants'):
             # print(self.headers)
             # print(self.path)
             self.send_headers_for_success_GET()
 
-            output = '<h1>I Have Below Restaurants in My Database</h1>'
+            output = "<h1>RESTAURANTS</h1><h3><a href='/restaurant/new'>Create New Restaurant Here</a></h3>"
             for r in restaurants_names:
-                output += f"""<h2>{r}</h2><a href=''>Edit</a><br>
+                output += f"""<h2>{r}</h2><a href='/restaurant/id/edit'>Edit</a><br>
 <a href=''>Delete</a><br><br>"""
 
             self.wfile.write(output.encode())
