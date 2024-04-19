@@ -15,3 +15,16 @@ def get_restaurant_names() -> list:
 
 restaurants_names = get_restaurant_names()
 
+def create_restaurant(res_name:str)->bool:
+    with Session(engine) as dbsession:
+        restaurant = Restaurant(name = res_name)        
+        try:
+            dbsession.add(restaurant)
+            dbsession.commit()
+            return True
+        except Exception as e:
+            print('An Error During Restaurant Creation',e)
+            return False
+
+
+
