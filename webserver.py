@@ -15,18 +15,35 @@ class HttpRequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
 
-        if self.path.endswith('/edit'):
+        if self.path.endswith('/delete'):   
+
+            id = self.path.split('/')[-2]
+            restaurant_name = get_restaurant(id)
+
+            if delete_restaurant(id):
+                self.send_response(302)
+                self.send_header('location', '/restaurants')
+                self.end_headers()
+            else:
+                resp = f'''<h1 style='color:red'> failed to Delete {restaurant_name} Restaurant</h1>'''
+                self.send_response(500)
+                self.send_header('content-type', 'text/html')
+                self.end_headers()
+                self.wfile.write(resp.encode())
+
+
+        elif self.path.endswith('/edit'):
             id = self.path.split('/')[-2]
             form = cgi.FieldStorage(self.rfile, self.headers, environ={
                                     'REQUEST_METHOD': self.command, 'CONTENT_TYPE': self.headers['content_type']})
             new_restaurant_name = form.getvalue('restaurant_name')
-            
+
             if update_restaurant_name(id, new_restaurant_name):
                 self.send_response(302)
                 self.send_header('location', '/restaurants')
                 self.end_headers()
             else:
-                resp = f'''<h1 style='color:red'> failed to create {restaurant_name} Restaurant</h1>'''
+                resp = f'''<h1 style='color:red'> failed to Edit to {restaurant_name} Restaurant</h1>'''
                 self.send_response(500)
                 self.send_header('content-type', 'text/html')
                 self.end_headers()
@@ -52,14 +69,25 @@ class HttpRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
 
-        if self.path.endswith('/edit'):
+        if self.path.endswith('/delete'):
+            id = self.path.split('/')[-2]
+            restaurant = get_restaurant(id)
+            self.send_headers_for_success_GET()
+            out = f"""<h2 style='color:red'>Do Your Really Want to delete {restaurant.name} Restaurant</h2>
+            <form method="post">
+    <input type="submit" value="Delete">
+</form>          
+            """
+            self.wfile.write(out.encode())
+
+        elif self.path.endswith('/edit'):
             id = self.path.split('/')[-2]
             self.send_headers_for_success_GET()
             restaurant = get_restaurant(id)
 
             out = f"""<h2>Editing {restaurant.name} Restaurant</h2>
             <form method="post">
-    <input type="text" name="restaurant_name" placeholder='{restaurant.name}' ><br><br>
+    <input type="text" name="restaurant_name" placeholder="{restaurant.name}" ><br><br>
     <input type="submit" value="Rename">
 </form>          
             """
@@ -83,7 +111,7 @@ class HttpRequestHandler(BaseHTTPRequestHandler):
             all_restaurants = get_all_restaurants()
             for r in all_restaurants:
                 output += f"""<h2>{r.name}</h2><a href='/restaurant/{r.id}/edit'>Edit</a><br>
-<a href=''>Delete</a><br><br>"""
+<a href='/restaurant/{r.id}/delete'>Delete</a><br><br>"""
 
             self.wfile.write(output.encode())
         else:
