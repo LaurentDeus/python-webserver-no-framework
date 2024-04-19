@@ -15,16 +15,33 @@ class HttpRequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
 
-        if self.path.endswith('/restaurant/new'):            
+        if self.path.endswith('/edit'):
+            id = self.path.split('/')[-2]
+            form = cgi.FieldStorage(self.rfile, self.headers, environ={
+                                    'REQUEST_METHOD': self.command, 'CONTENT_TYPE': self.headers['content_type']})
+            new_restaurant_name = form.getvalue('restaurant_name')
+            
+            if update_restaurant_name(id, new_restaurant_name):
+                self.send_response(302)
+                self.send_header('location', '/restaurants')
+                self.end_headers()
+            else:
+                resp = f'''<h1 style='color:red'> failed to create {restaurant_name} Restaurant</h1>'''
+                self.send_response(500)
+                self.send_header('content-type', 'text/html')
+                self.end_headers()
+                self.wfile.write(resp.encode())
+
+        elif self.path.endswith('/restaurant/new'):
             # print(self.headers)
             form = cgi.FieldStorage(self.rfile, self.headers, environ={'REQUEST_METHOD': self.command,
-                                                                   'CONTENT_TYPE': self.headers['Content-Type'],
-                                                                   })
+                                                                       'CONTENT_TYPE': self.headers['Content-Type'],
+                                                                       })
 
-            restaurant_name:str = form.getvalue('restaurant_name', '')
+            restaurant_name: str = form.getvalue('restaurant_name', '')
             if create_restaurant(restaurant_name):
                 self.send_response(302)
-                self.send_header('location','/restaurants')
+                self.send_header('location', '/restaurants')
                 self.end_headers()
             else:
                 resp = f'''<h1 style='color:red'> failed to create {restaurant_name} Restaurant</h1>'''
@@ -35,7 +52,20 @@ class HttpRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
 
-        if self.path.endswith('/restaurant/new'):
+        if self.path.endswith('/edit'):
+            id = self.path.split('/')[-2]
+            self.send_headers_for_success_GET()
+            restaurant = get_restaurant(id)
+
+            out = f"""<h2>Editing {restaurant.name} Restaurant</h2>
+            <form method="post">
+    <input type="text" name="restaurant_name" placeholder='{restaurant.name}' ><br><br>
+    <input type="submit" value="Rename">
+</form>          
+            """
+            self.wfile.write(out.encode())
+
+        elif self.path.endswith('/restaurant/new'):
             self.send_headers_for_success_GET()
             out = """<h1>CREATING NEW RESTAURANT</h1>
 <form action="/restaurant/new" method="post">
