@@ -3,17 +3,24 @@
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import cgi
+from cruds import *
+
 
 class HttpRequestHandler(BaseHTTPRequestHandler):
+
+    def send_headers_for_success_GET(self):
+        self.send_response(200, message='success')
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
 
     def do_POST(self):
         # print(self.headers)
         form = cgi.FieldStorage(self.rfile, self.headers, environ={'REQUEST_METHOD': 'POST',
                                                                    'CONTENT_TYPE': self.headers['Content-Type'],
                                                                    })
-        
+
         # print(form.getvalue('say'))
-        say  = form.getvalue('say','')
+        say = form.getvalue('say', '')
         resp = f'''
 <h2>Oooh Sure!!</h2>
 <h1>{say}</h1>
@@ -22,28 +29,28 @@ class HttpRequestHandler(BaseHTTPRequestHandler):
     <input type="text" name="say" id="say"><br><br>
     <input type="submit">
 </form>
-'''     
-        self.send_response(404) 
-        self.send_header('content-type','text/html')  
+'''
+        self.send_response(404)
+        self.send_header('content-type', 'text/html')
         self.end_headers()
         self.wfile.write(resp.encode())
 
-
     def do_GET(self):
-        # print(self.headers)
-        print(self.path)
-        self.send_response(200, message='success')
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
-        resp = b'''
-<h2>What would you like me to say</h2>
-<form action="" method="post">
-    <label for="say"><strong>SAY</strong>:</label>
-    <input type="text" name="say" id="say"><br><br>
-    <input type="submit">
-</form>
-'''
-        self.wfile.write(resp)
+
+        if self.path.endswith('/restaurants'):
+            # print(self.headers)
+            # print(self.path)
+            self.send_headers_for_success_GET()
+
+            output = ''
+            for r in restaurants_names:
+                output += f"<li>{r}</li>"
+
+            self.wfile.write(output.encode())
+        else:
+            self.send_headers_for_success_GET()
+            self.wfile.write(
+                "<h1 style='color:red'>I have no this Route, please wait :)</h1>".encode())
 
 
 def main(server_class=HTTPServer, handler_class=HttpRequestHandler):
