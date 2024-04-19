@@ -50,8 +50,9 @@ class HttpRequestHandler(BaseHTTPRequestHandler):
             self.send_headers_for_success_GET()
 
             output = "<h1>RESTAURANTS</h1><h3><a href='/restaurant/new'>Create New Restaurant Here</a></h3>"
-            for r in restaurants_names:
-                output += f"""<h2>{r}</h2><a href='/restaurant/id/edit'>Edit</a><br>
+            all_restaurants = get_all_restaurants()
+            for r in all_restaurants:
+                output += f"""<h2>{r.name}</h2><a href='/restaurant/{r.id}/edit'>Edit</a><br>
 <a href=''>Delete</a><br><br>"""
 
             self.wfile.write(output.encode())
