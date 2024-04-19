@@ -15,29 +15,23 @@ class HttpRequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
 
-        if self.path.endswith('/restaurant/new'):
-            pass
-
-        # print(self.headers)
-        form = cgi.FieldStorage(self.rfile, self.headers, environ={'REQUEST_METHOD': 'POST',
+        if self.path.endswith('/restaurant/new'):            
+            # print(self.headers)
+            form = cgi.FieldStorage(self.rfile, self.headers, environ={'REQUEST_METHOD': self.command,
                                                                    'CONTENT_TYPE': self.headers['Content-Type'],
                                                                    })
 
-        # print(form.getvalue('say'))
-        say = form.getvalue('say', '')
-        resp = f'''
-<h2>Oooh Sure!!</h2>
-<h1>{say}</h1>
-<form action="" method="post">
-    <label for="say"><strong>SAY</strong>:</label>
-    <input type="text" name="say" id="say"><br><br>
-    <input type="submit">
-</form>
-'''
-        self.send_response(404)
-        self.send_header('content-type', 'text/html')
-        self.end_headers()
-        self.wfile.write(resp.encode())
+            restaurant_name:str = form.getvalue('restaurant_name', '')
+            if create_restaurant(restaurant_name):
+                self.send_response(302)
+                self.send_header('location','/restaurants')
+                self.end_headers()
+            else:
+                resp = f'''<h1 style='color:red'> failed to create {restaurant_name} Restaurant</h1>'''
+                self.send_response(500)
+                self.send_header('content-type', 'text/html')
+                self.end_headers()
+                self.wfile.write(resp.encode())
 
     def do_GET(self):
 
@@ -46,7 +40,7 @@ class HttpRequestHandler(BaseHTTPRequestHandler):
             out = """<h1>CREATING NEW RESTAURANT</h1>
 <form action="/restaurant/new" method="post">
     <input type="text" name="restaurant_name" placeholder='Restaurant Name'><br><br>
-    <input type="submit">
+    <input type="submit" value='Create'>
 </form>"""
             self.wfile.write(out.encode())
 
