@@ -46,3 +46,14 @@ def update_restaurant_name(old_id:int,new_name:str)->bool:
             print(f'Could not Edit {old_res.name} to {new_name}',e)
             return False
 
+
+def delete_restaurant(id:int)->bool:
+    with Session(engine) as dbsession:
+        try:
+            res_to_delete = dbsession.query(Restaurant).get(id)
+            dbsession.delete(res_to_delete)
+            dbsession.commit()
+            return True
+        except Exception as e:
+            print(f'Could not delete Restaurant with ID {id}',e)
+            return False
