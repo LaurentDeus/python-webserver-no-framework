@@ -34,5 +34,15 @@ def create_restaurant(res_name:str)->bool:
             print('An Error During Restaurant Creation',e)
             return False
 
-
+def update_restaurant_name(old_id:int,new_name:str)->bool:
+    with Session(engine) as dbsession:
+        try:
+            old_res = dbsession.query(Restaurant).get(old_id)
+            old_res.name = new_name
+            dbsession.add(old_res)
+            dbsession.commit()
+            return True
+        except Exception as e:
+            print(f'Could not Edit {old_res.name} to {new_name}',e)
+            return False
 
