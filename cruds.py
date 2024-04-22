@@ -83,7 +83,8 @@ def create_menuitem(restaurant_id: int, name: str, description: str, price: int,
         except Exception as e:
             print(f'Failed to Add {name} to {restaurant_name} Restaurant', e)
             return
-        
+
+
 def get_restaurant_menuitem(menuitem_id: int) -> MenuItem:
     with Session(engine) as dbsession:
         try:
@@ -92,3 +93,19 @@ def get_restaurant_menuitem(menuitem_id: int) -> MenuItem:
             print(
                 f'Could not get MenuItem with ID {menuitem_id}', e)
             return
+        
+def update_menuitem(menuitem_id: int, name: str, description: str, price: int, course: str) -> bool:
+    mi = get_restaurant_menuitem(menuitem_id=menuitem_id)
+    mi.name = name
+    mi.course = course
+    mi.price =  price
+    mi.description = description
+    with Session(engine) as dbsession:
+        try:
+            dbsession.add(mi)
+            dbsession.commit()
+            return True
+        except Exception as e:
+            print(
+                f'Could not update MenuItem with ID {menuitem_id}', e)
+            return 
