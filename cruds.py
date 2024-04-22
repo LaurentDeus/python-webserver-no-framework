@@ -1,4 +1,4 @@
-from typing import Union
+from typing import List, Union
 from sqlalchemy.orm import Session
 from database import *
 
@@ -10,7 +10,7 @@ def get_restaurant(id:int)->Union[Restaurant,None]:
     except Exception as e:
         print(f'Error occured while fetching Restaurant with ID {id}',e)
 
-def get_all_restaurants() -> Restaurant:
+def get_all_restaurants() -> List[Restaurant]:
     with Session(engine) as dbsession:
         restaurants = dbsession.query(Restaurant).all()
     return restaurants
@@ -19,9 +19,6 @@ def get_all_restaurants() -> Restaurant:
 def get_restaurant_names() -> list:
     restaurants = get_all_restaurants()
     return [r.name for r in restaurants]
-
-
-restaurants_names = get_restaurant_names()
 
 def create_restaurant(res_name:str)->bool:
     with Session(engine) as dbsession:
@@ -57,3 +54,12 @@ def delete_restaurant(id:int)->bool:
         except Exception as e:
             print(f'Could not delete Restaurant with ID {id}',e)
             return False
+
+def get_restaurant_menuitems(restaurant_id:int)->Union[List[MenuItem],None]:
+    with Session(engine) as dbsession:
+        try:
+            return dbsession.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
+        except Exception as e:
+            print(f'Could not get MenuItems for Restaurant with ID {restaurant_id}',e)
+            return 
+
