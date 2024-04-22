@@ -1,5 +1,5 @@
 from flask import Flask, redirect, render_template, request, url_for
-from cruds import create_menuitem, get_all_restaurants, get_restaurant, get_restaurant_menuitem, get_restaurant_menuitems, update_menuitem
+from cruds import create_menuitem, get_all_restaurants, get_restaurant, get_restaurant_menuitem, get_restaurant_menuitems, update_menuitem,delete_menuitem as deleteMenuitem
 
 app = Flask(__name__)
 
@@ -35,9 +35,15 @@ def edit_menuitem(restaurant_id: int, menuitem_id: int):
     return render_template('edit_menuitem.html', **menuitem_data)
 
 
-@app.route('/restaurant/<int:restaurant_id>/<int:menuitem_id>/delete')
+@app.route('/restaurant/<int:restaurant_id>/<int:menuitem_id>/delete',methods=['post','get'])
 def delete_menuitem(restaurant_id, menuitem_id):
-    return render_template('delete_menuitem.html', rid=restaurant_id, mid=menuitem_id)
+    if request.method == 'POST':
+        if deleteMenuitem(menuitem_id):
+            return redirect(url_for('menuitems', restaurant_id=restaurant_id))
+    menuitem_data = {}
+    menuitem_data['restaurant'] = get_restaurant(id=restaurant_id)
+    menuitem_data['menuitem'] = get_restaurant_menuitem(menuitem_id)
+    return render_template('delete_menuitem.html', **menuitem_data)
 
 
 @app.route('/restaurants/<int:restaurant_id>/new_menuitem', methods=['post', 'get'])
