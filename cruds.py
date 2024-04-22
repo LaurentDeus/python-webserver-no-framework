@@ -83,3 +83,12 @@ def create_menuitem(restaurant_id: int, name: str, description: str, price: int,
         except Exception as e:
             print(f'Failed to Add {name} to {restaurant_name} Restaurant', e)
             return
+        
+def get_restaurant_menuitem(menuitem_id: int) -> MenuItem:
+    with Session(engine) as dbsession:
+        try:
+            return dbsession.query(MenuItem).get(menuitem_id)
+        except Exception as e:
+            print(
+                f'Could not get MenuItem with ID {menuitem_id}', e)
+            return
