@@ -1,5 +1,5 @@
 from flask import Flask, redirect, render_template, request, url_for
-from cruds import create_menuitem, get_all_restaurants, get_restaurant, get_restaurant_menuitems
+from cruds import create_menuitem, get_all_restaurants, get_restaurant, get_restaurant_menuitem, get_restaurant_menuitems, update_menuitem
 
 app = Flask(__name__)
 
@@ -19,9 +19,20 @@ def menuitems(restaurant_id):
     return render_template('menu_items.html', **data)
 
 
-@app.route('/restaurant/<int:restaurant_id>/<int:menuitem_id>/edit')
+@app.route('/restaurant/<int:restaurant_id>/<int:menuitem_id>/edit', methods=['post', 'get'])
 def edit_menuitem(restaurant_id: int, menuitem_id: int):
-    return render_template('edit_menuitem.html', rid=restaurant_id, mid=menuitem_id)
+    if request.method == 'POST':
+        menuitem_name = request.form.get('menuitem_name')
+        description = request.form.get('description')
+        price = request.form.get('price')
+        course = request.form.get('course')
+        if update_menuitem(menuitem_id,menuitem_name,description,price,course):
+            return redirect(url_for('menuitems', restaurant_id=restaurant_id))
+        return render_template('edit_menuitem.html', **request.form)
+    menuitem_data = {}
+    menuitem_data['restaurant'] = get_restaurant(id=restaurant_id)
+    menuitem_data['menuitem'] = get_restaurant_menuitem(menuitem_id)
+    return render_template('edit_menuitem.html', **menuitem_data)
 
 
 @app.route('/restaurant/<int:restaurant_id>/<int:menuitem_id>/delete')
