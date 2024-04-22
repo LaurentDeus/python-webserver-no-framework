@@ -1,5 +1,5 @@
 <h2>ALL RESTAURANTS</h2>
 {% for restaurant in restaurants %}
-<li><a href={{url_for('menuitems',restaurant_id=restaurant.id)}}>{{restaurant.name}}</a>
+<li><a href="{{url_for('menuitems',restaurant_id=restaurant.id)}}">{{restaurant.name}}</a>
 </li><br><br>
 {% endfor %}
