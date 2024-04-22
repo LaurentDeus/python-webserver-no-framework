@@ -1,0 +1,12 @@
+<h1>adding new menu item on restaurant with ID {{rid}}</h1>
+
+<form action="{{url_for('add_new_menuitem',restaurant_id=rid)}}" method="post">
+
+    <input type="text" name="menuitem_name" required placeholder="Enter MenuItem Name"> <br><br>
+    <input type="number" name="price" required placeholder="Price"><br><br>
+    <input type="text" name="description" required placeholder="Description"><br><br>
+    <input type="text" name="course" required placeholder="course"><br><br>
+
+
+    <input type="submit" value="ADD">
+</form>
