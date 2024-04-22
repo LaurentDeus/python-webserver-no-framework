@@ -109,3 +109,14 @@ def update_menuitem(menuitem_id: int, name: str, description: str, price: int, c
             print(
                 f'Could not update MenuItem with ID {menuitem_id}', e)
             return 
+        
+def delete_menuitem(menuitem_id:int)->bool:
+    with Session(engine) as dbsession:
+        try:
+            menuitem = dbsession.query(MenuItem).get(menuitem_id)
+            dbsession.delete(menuitem)
+            dbsession.commit()
+            return True
+        except Exception as e:
+            print(f'Could not delete {menuitem.name}', e)
+            return False
