@@ -1,0 +1,7 @@
+<h1>Menu Items at {{restaurant.name}} Restaurant</h1>
+
+{% for mi in menu_items %}
+<h2>{{mi.name}}</h2> 
+{{mi.description}} <br>
+{{mi.price}}
+{% endfor %}
