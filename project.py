@@ -67,5 +67,12 @@ def menuitems_api(restaurant_id):
     return [mi.serialize for mi in menuitems] #because menuitems are not json serializable
 
 
+@app.route('/restaurants/<int:restaurant_id>/menu/<int:menuitem_id>/json')
+def menuitem_api(restaurant_id,menuitem_id):
+    mi = get_restaurant_menuitem(menuitem_id,restaurant_id=restaurant_id)
+    if mi:
+        return mi.serialize
+    return "Json Respose With Error"
+
 if __name__ == '__main__':
     app.run(debug=True)
