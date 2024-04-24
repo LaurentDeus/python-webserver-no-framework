@@ -23,6 +23,16 @@ class MenuItem(Base):
     restaurant_id: Mapped[int] = mapped_column(ForeignKey('restaurant.id'))
     restaurant = relationship(Restaurant)
 
+    @property
+    def serialize(self):
+        return{
+            'id':self.id,
+            'menu_name':self.name,
+            'description':self.description,
+            'price':self.price,
+            'course':self.course
+        }
+
 
 engine = create_engine('sqlite:///restaurant.db', echo=True)
 Base.metadata.create_all(engine)
