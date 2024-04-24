@@ -1,7 +1,8 @@
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, url_for
 from cruds import create_menuitem, get_all_restaurants, get_restaurant, get_restaurant_menuitem, get_restaurant_menuitems, update_menuitem,delete_menuitem as deleteMenuitem
 
 app = Flask(__name__)
+app.secret_key = 'mysecretkey'
 
 
 @app.route('/')
@@ -56,6 +57,7 @@ def add_new_menuitem(restaurant_id):
     course = request.form.get('course')
 
     if create_menuitem(restaurant_id, menuitem_name, description, price, course):
+        flash(f'{menuitem_name} Menuitem Created Successfully!')
         return redirect(url_for('menuitems', restaurant_id=restaurant_id))
     return render_template('add_new_menuitem.html', rid=restaurant_id)
 

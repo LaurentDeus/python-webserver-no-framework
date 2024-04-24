@@ -1,3 +1,9 @@
+{% extends "base.html" %}
+
+{% block title %}Home - My Website{% endblock %}
+
+
+{% block content %}
 <h1>adding new menu item on restaurant with ID {{rid}}</h1>
 
 <form action="{{url_for('add_new_menuitem',restaurant_id=rid)}}" method="post">
@@ -10,3 +16,4 @@
 
     <input type="submit" value="ADD">
 </form>
+{% endblock %}
