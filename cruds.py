@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional, Union
 from sqlalchemy.orm import Session
 from database import *
 
@@ -85,20 +85,30 @@ def create_menuitem(restaurant_id: int, name: str, description: str, price: int,
             return
 
 
-def get_restaurant_menuitem(menuitem_id: int) -> MenuItem:
+def get_restaurant_menuitem(menuitem_id: int, restaurant_id: Optional[int] = None) -> Union[MenuItem, None]:
+    if not restaurant_id:
+        with Session(engine) as dbsession:
+            try:
+                return dbsession.query(MenuItem).get(menuitem_id)
+            except Exception as e:
+                print(
+                    f'Could not get MenuItem with ID {menuitem_id}', e)
+                return
     with Session(engine) as dbsession:
         try:
-            return dbsession.query(MenuItem).get(menuitem_id)
+            mi = dbsession.query(MenuItem).filter_by(
+                restaurant_id=restaurant_id, id=menuitem_id).first()
+            return mi
         except Exception as e:
-            print(
-                f'Could not get MenuItem with ID {menuitem_id}', e)
+            print('Failed to get This menu item in this restaurant', e)
             return
-        
+
+
 def update_menuitem(menuitem_id: int, name: str, description: str, price: int, course: str) -> bool:
     mi = get_restaurant_menuitem(menuitem_id=menuitem_id)
     mi.name = name
     mi.course = course
-    mi.price =  price
+    mi.price = price
     mi.description = description
     with Session(engine) as dbsession:
         try:
@@ -108,9 +118,10 @@ def update_menuitem(menuitem_id: int, name: str, description: str, price: int, c
         except Exception as e:
             print(
                 f'Could not update MenuItem with ID {menuitem_id}', e)
-            return 
-        
-def delete_menuitem(menuitem_id:int)->bool:
+            return
+
+
+def delete_menuitem(menuitem_id: int) -> bool:
     with Session(engine) as dbsession:
         try:
             menuitem = dbsession.query(MenuItem).get(menuitem_id)
