@@ -25,12 +25,13 @@ class MenuItem(Base):
 
     @property
     def serialize(self):
-        return{
-            'id':self.id,
-            'menu_name':self.name,
-            'description':self.description,
-            'price':self.price,
-            'course':self.course
+        return {
+            'id': self.id,
+            'restaurant_id': self.restaurant_id,
+            'menu_name': self.name,
+            'description': self.description,
+            'price': self.price,
+            'course': self.course
         }
 
 
