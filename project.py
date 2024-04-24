@@ -61,6 +61,11 @@ def add_new_menuitem(restaurant_id):
         return redirect(url_for('menuitems', restaurant_id=restaurant_id))
     return render_template('add_new_menuitem.html', rid=restaurant_id)
 
+@app.route('/restaurants/<int:restaurant_id>/menu/json')
+def menuitems_api(restaurant_id):
+    menuitems = get_restaurant_menuitems(restaurant_id)
+    return [mi.serialize for mi in menuitems] #because menuitems are not json serializable
+
 
 if __name__ == '__main__':
     app.run(debug=True)
